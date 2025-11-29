@@ -1,0 +1,45 @@
+{% load static %}
+
+<div class="menu-body navbar-vertical tab-content" data-simplebar>
+    <div id="Dashboard" class="main-icon-menu-pane tab-pane show active" role="tabpanel">
+        <div class="title-box">
+            <h6 class="menu-title">Dashboard</h6>
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+                    href="{% url 'controller:dashboard' %}">
+                    <i class="ti ti-smart-home menu-icon"></i> Overview
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div id="Zones" class="main-icon-menu-pane tab-pane" role="tabpanel">
+        <div class="title-box">
+            <h6 class="menu-title">Zones</h6>
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'zone_list' %}active{% endif %}"
+                    href="{% url 'controller:zone_list' %}">
+                    <i class="ti ti-building menu-icon"></i> Zones
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div id="Schedules" class="main-icon-menu-pane tab-pane" role="tabpanel">
+        <div class="title-box">
+            <h6 class="menu-title">Schedules</h6>
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'schedule_list' %}active{% endif %}"
+                    href="{% url 'controller:schedule_list' %}">
+                    <i class="ti ti-calendar menu-icon"></i> Schedules
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>

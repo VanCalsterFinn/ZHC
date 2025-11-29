@@ -1,0 +1,49 @@
+{% load static %}
+{% load i18n %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta content="Heating Dashboard" name="description" />
+    <meta content="Heating Project" name="author" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{% static 'assets/images/favicon.ico' %}">
+
+    <!-- CSS -->
+    <link href="{% static 'assets/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'assets/css/icons.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'assets/css/app.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'assets/css/main.css' %}" rel="stylesheet" type="text/css" />
+
+    {% block header_includes %}{% endblock %}
+</head>
+
+<style>
+    body.auth-page {
+        background-image: url("{% static 'assets/images/p-1.png' %}");
+        background-size: cover;
+        background-position: center center;
+        min-height: 100vh;
+    }
+</style>
+
+<body id="body" class="auth-page">
+    <div class="container-md">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+
+    <script src="{% static 'assets/js/app.js' %}"></script>
+
+    {% block footer_includes %}{% endblock %}
+    {% block scripting %}{% endblock %}
+</body>
+
+</html>

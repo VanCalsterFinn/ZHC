@@ -1,0 +1,103 @@
+{% extends 'controller/base_controller.html' %}
+{% load static %}
+
+{% block content_dashboard %}
+<div class="container-fluid py-4">
+
+    <div class="card shadow-sm border-0">
+        <div
+            class="card-header bg-transparent border-0 pt-3 pb-2 px-4 d-inline-flex justify-content-between align-items-center">
+            <h5 class="fw-semibold mb-0 text-primary">Schedules Overview</h5>
+            <button class="btn btn-primary btn-sm d-flex align-items-center px-3" id="addScheduleBtn"
+                data-bs-toggle="modal" data-bs-target="#scheduleModal">
+                <i class="ti ti-plus me-1"></i> Add Schedule
+            </button>
+        </div>
+
+        <div class="card-body pt-2 px-4 pb-4">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle mb-0" id="scheduleTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Zone</th>
+                            <th>Day</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Target Temp</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sched in schedules %}
+                        <tr>
+                            <td>{{ sched.zone.name }}</td>
+                            <td>{{ sched.get_day_of_week_display }}</td>
+                            <td>{{ sched.start_time|time:"H:i" }}</td>
+                            <td>{{ sched.end_time|time:"H:i" }}</td>
+                            <td>{{ sched.target_temperature }}°C</td>
+                            <td class="text-end">
+                                <div class="d-inline-flex justify-content-end gap-1">
+                                    <button class="btn btn-sm btn-outline-primary editScheduleBtn"
+                                        data-id="{{ sched.id }}" data-name="{{ sched.name }}"
+                                        data-zone="{{ sched.zone.id }}" data-day="{{ sched.day_of_week }}"
+                                        data-start="{{ sched.start_time|time:'H:i' }}"
+                                        data-end="{{ sched.end_time|time:'H:i' }}"
+                                        data-temp="{{ sched.target_temperature }}" data-bs-toggle="modal"
+                                        data-bs-target="#scheduleModal">
+                                        <i class="ti ti-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger deleteScheduleBtn"
+                                        data-id="{{ sched.id }}" data-name="{{ sched }}" data-bs-toggle="modal"
+                                        data-bs-target="#deleteScheduleModal">
+                                        <i class="ti ti-trash"></i>
+                                    </button>
+
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">No schedules yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Schedule Modal -->
+<div class="modal fade" id="scheduleModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            {% include "controller/partials/_schedule_form.html" %}
+        </div>
+    </div>
+</div>
+
+<!-- Delete Schedule Modal -->
+<div class="modal fade" id="deleteScheduleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Schedule</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete "<span class="schedule-name fw-semibold"></span>"?</p>
+            </div>
+            <div class="modal-footer d-flex justify-content-end gap-2">
+                <form method="post" id="deleteScheduleForm">{% csrf_token %}
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+{% block extra_js %}
+<script src="{% static 'assets/js/schedules.js' %}"></script>
+{% endblock %}

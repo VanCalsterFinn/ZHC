@@ -1,0 +1,189 @@
+/* === Custom overrides for active sidebar indicator === */
+/* Table container */
+.dataTables_wrapper .table {
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: var(--bs-body-bg);
+}
+
+/* Hover effect */
+.dataTables_wrapper .table-hover tbody tr:hover {
+    background-color: rgba(13, 110, 253, 0.05);
+    transition: background 0.2s ease-in-out;
+}
+
+/* Search input */
+.dataTables_filter input {
+    border-radius: 50rem !important;
+    border: 1px solid #dee2e6;
+    padding: 0.375rem 1rem;
+    margin-left: 0.5rem;
+}
+
+/* Pagination buttons */
+.dataTables_wrapper .dataTables_paginate .pagination .page-link {
+    border: none;
+    color: #0d6efd;
+    border-radius: 0.375rem;
+}
+
+.dataTables_wrapper .dataTables_paginate .pagination .page-item.active .page-link {
+    background-color: #0d6efd;
+    color: #fff;
+}
+
+.dataTables_wrapper .dataTables_paginate .pagination .page-link:hover {
+    background-color: rgba(13, 110, 253, 0.1);
+}
+
+/* Info text and “Show entries” dropdown */
+.dataTables_info,
+.dataTables_length label {
+    color: #6c757d !important;
+}
+
+/* Compact spacing */
+table.dataTable>tbody>tr>td {
+    vertical-align: middle;
+    padding: 0.5rem 0.75rem;
+}
+
+
+
+.main-icon-menu .nav-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    width: 36px;
+    border-radius: 5px;
+    transition: background-color .18s ease, transform .12s ease;
+}
+
+/* Highlight active link background and icon color */
+.main-icon-menu .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.main-icon-menu .nav-link.active i {
+    color: #fff;
+}
+
+/* Base (inactive) triangle state — invisible & slightly offset */
+.main-icon-menu .nav-link::after {
+    content: "";
+    position: absolute;
+    left: 40px;
+    top: 10px;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid #ffffff;
+    opacity: 0;
+    transform: translateX(-4px) rotate(180deg);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+/* Active state — visible & slides into place */
+.main-icon-menu .nav-link.active::after {
+    opacity: 1;
+    transform: translateX(0) rotate(180deg);
+}
+
+/* RTL adjustment */
+html[dir="rtl"] .main-icon-menu .nav-link::after {
+    right: 8px;
+    left: auto;
+    border-left: none;
+    border-right: 10px solid #ffffff;
+    transform: translateX(4px);
+}
+
+html[dir="rtl"] .main-icon-menu .nav-link.active::after {
+    transform: translateX(0);
+}
+
+@media (max-width: 1023.98px) {
+    .main-menu-inner {
+        top: 60px !important;
+    }
+}
+
+.dropdown-menu {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.dropdown-menu.show {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    z-index: 1050;
+}
+
+form .form-label {
+    font-weight: 500;
+    color: #555;
+}
+
+form input.form-control,
+form select.form-select {
+    border-radius: 8px;
+    box-shadow: none;
+    border-color: #dce1ec;
+}
+
+.zone-card {
+    border-radius: 12px;
+    padding: 1rem;
+    background: #fff;
+    position: relative;
+    transition: transform 0.1s, box-shadow 0.2s;
+}
+
+.zone-card:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.zone-badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.6em;
+}
+
+.zone-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.target-temp-container {
+    align-items: center;
+}
+
+.target-temp {
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+.current-temp {
+    font-size: 1rem;
+    margin-top: 0.5rem;
+}
+
+.modal-body input.form-control {
+    font-size: 1rem;
+}
+
+.modal-title {
+    font-size: 1.25rem;
+}
+
+#zoneForm .form-label {
+    font-weight: 500;
+}
+
+.modal-footer .btn {
+    min-width: 90px;
+}

@@ -1,0 +1,133 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta content="Heating Dashboard" name="description" />
+    <meta content="Heating Project" name="author" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="{% static 'assets/images/favicon.ico' %}">
+
+    <!-- App css -->
+    <link href="{% static 'assets/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'assets/css/icons.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'assets/css/app.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'assets/css/custom.css' %}" rel="stylesheet" type="text/css" />
+
+    {% block extra_css %}{% endblock %}
+    {% block head_js %}{% endblock %}
+</head>
+
+<body id="body">
+    <!-- Sidebar -->
+    <div class="leftbar-tab-menu">
+        <div class="main-icon-menu">
+            <a href="{% url 'controller:dashboard' %}" class="logo logo-metrica d-block text-center">
+                <span>
+                    <img src="{% static 'assets/images/ZHC-logo-crop.png' %}" alt="logo-small" class="logo-sm">
+                </span>
+            </a>
+            <div class="main-icon-menu-body">
+                <div class="position-relative h-100" data-simplebar style="overflow-x: hidden;">
+                    <ul class="nav flex-column" id="icon-sidebar">
+
+                        <!-- Dashboard -->
+                        <li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" title="Dashboard">
+                            <a href="{% url 'controller:dashboard' %}"
+                                class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                                <i class="ti ti-smart-home menu-icon"></i>
+                            </a>
+                        </li>
+
+                        <!-- Zones -->
+                        <li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" title="Zones">
+                            <a href="{% url 'controller:zone-list' %}"
+                                class="nav-link {% if request.resolver_match.url_name == 'zone_list' %}active{% endif %}">
+                                <i class="ti ti-building menu-icon"></i>
+                            </a>
+                        </li>
+
+                        <!-- Schedules -->
+                        <li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" title="Schedules">
+                            <a href="{% url 'controller:schedule_list' %}"
+                                class="nav-link {% if request.resolver_match.url_name == 'schedule_list' %}active{% endif %}">
+                                <i class="ti ti-calendar menu-icon"></i>
+                            </a>
+                        </li>
+
+                    </ul><!-- end nav -->
+                </div><!-- end simplebar -->
+            </div><!-- end main-icon-menu-body -->
+        </div>
+        <div class="main-menu-inner">
+            <!-- LOGO -->
+            <!--end logo-->
+            <!--end topbar-left-->
+            <!--end logo-->
+            {% block sidebar %}
+            {% include 'includes/base_sidebar.html' %}
+            {% endblock %}
+            <!--end menu-body-->
+            <!-- end main-menu-inner-->
+        </div>
+    </div>
+    <!-- end Sidebar -->
+
+
+    <!-- Top Bar -->
+    {% include 'includes/topbar.html' %}
+    <!-- End Top Bar -->
+
+
+
+    <div class="page-wrapper p-3">
+        <!-- Page Content -->
+        <div class="page-content-tab">
+            <div class="container-fluid">
+                <!-- Page-Title -->
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="page-title-box">
+                            <div class="float-end">
+                                <ol class="breadcrumb">
+                                    {% for crumb in breadcrumbs %}
+                                    {% if crumb.active %}
+                                    <li class="breadcrumb-item active">{{ crumb.title }}</li>
+                                    {% else %}
+                                    <li class="breadcrumb-item"><a href="{{ crumb.url }}">{{ crumb.title }}</a></li>
+                                    {% endif %}
+                                    {% endfor %}
+                                </ol>
+                            </div>
+                            <h4 class="page-title">{{ page_title }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% block content %}
+            {% endblock %}
+
+            <!-- Footer -->
+            {% include 'includes/footer.html' %}
+            <!-- End Footer -->
+        </div>
+    </div>
+
+    <!-- Javascript -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+    <!-- Feather Icons CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="{% static 'assets/libs/simplebar/simplebar.min.js' %}"></script>
+    <script src="{% static 'assets/libs/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'assets/js/app.js' %}"></script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

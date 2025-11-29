@@ -1,0 +1,257 @@
+tr[data-href] {
+    cursor: pointer;
+}
+
+.pin.btn {
+    font-size: 4rem;
+    padding: 0.6rem 2.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.timetracking .total-time {
+    position: absolute;
+    right: 60px;
+}
+
+.modal-content .modal-body p,
+.modal-content h4 {
+    color: #000444;
+}
+
+.font-weight-bold {
+    font-weight: bold;
+}
+
+input[type=checkbox].delete-checkbox {
+    display: none;
+}
+
+.delete-label {
+    display: inline-block;
+    padding: 3px;
+}
+
+.delete-label::before {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 500;
+    content: "\f2ed";
+    color: #f1646c;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+input[type=checkbox].delete-checkbox:checked+.delete-label {
+    background: #f00;
+    color: #fff;
+}
+
+input[type=checkbox].delete-checkbox:checked~table tr {
+    display: none;
+}
+
+.page-wrapper {
+    margin-left: 50px;
+}
+
+
+.message-alert,
+input#pin {
+    font-size: 1.5rem;
+}
+
+.choose-block {
+    background-color: #f5f5f5;
+    padding: 20px;
+    margin: 20px;
+    border-radius: .25rem;
+    border: 1px solid rgba(0, 0, 0, .125)
+}
+
+.choose-block:hover,
+.choose-block:active,
+.choose-block:focus {
+    background-color: rgba(245, 245, 245, .40);
+}
+
+.choose-block h3 {
+    color: black;
+}
+
+.btn.tablet-other-choices {
+    text-decoration: underline;
+    font-size: 1rem;
+}
+
+.bootstrap-datetimepicker-widget {
+    z-index: 10000;
+}
+
+.bootstrap-datetimepicker-widget>ul {
+    padding: 10px;
+}
+
+.bootstrap-datetimepicker-widget>ul>.collapse:not(.show) {
+    display: list-item;
+}
+
+.bootstrap-datetimepicker-widget>ul>li>div.timepicker {
+    margin-top: 10px;
+}
+
+.ml-1 {
+    margin-left: .25rem;
+}
+
+.ml-2 {
+    margin-left: .50rem;
+}
+
+.ml-3 {
+    margin-left: .75rem;
+}
+
+.mr-1 {
+    margin-right: .25rem;
+}
+
+.mr-2 {
+    margin-right: .50rem;
+}
+
+.mr-3 {
+    margin-right: .75rem;
+}
+
+.w-30 {
+    width: 30% !important;
+}
+
+.datepicker {
+    position: absolute;
+    z-index: 9999 !important;
+}
+
+.card-title {
+    text-transform: none !important;
+}
+
+.no-bullets {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.fc-event {
+    cursor: pointer !important;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.pl-0 {
+    padding-left: 0 !important;
+}
+
+
+.red-dot {
+    width: 8px;
+    height: 8px;
+    background-color: red;
+    border-radius: 50%;
+    display: inline-block;
+    position: absolute;
+    top: 3px;
+    left: -3px;
+}
+
+
+.first_detail_card {
+    margin-top: 15px;
+}
+
+.status-200 {
+    background-color: #4CAF50;
+    /* Green */
+    color: #fff;
+    padding: 4px 6px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.status-301 {
+    background-color: #1E88E5;
+    /* Blue */
+    color: #fff;
+    padding: 4px 6px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.status-302 {
+    background-color: #26C6DA;
+    /* Cyan */
+    color: #fff;
+    padding: 4px 6px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.status-403 {
+    background-color: #D32F2F;
+    /* Dark Red */
+    color: #fff;
+    padding: 4px 6px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.status-404 {
+    background-color: #E53935;
+    /* Red */
+    color: #fff;
+    padding: 4px 6px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.status-500 {
+    background-color: #FFC107;
+    /* Yellow */
+    color: #fff;
+    padding: 4px 6px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.status-0 {
+    background-color: #35c2cc;
+    /* Light Blue */
+    color: #fff;
+    padding: 4px 6px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.status-not_tested {
+    background-color: #2196F3;
+    /* Blue */
+    color: #fff;
+    padding: 4px 6px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+#weekPickerTrigger {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    font-size: 18px;
+}
+
+.card {
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}

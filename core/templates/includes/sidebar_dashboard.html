@@ -1,0 +1,22 @@
+<div class="menu-body navbar-vertical tab-content" data-simplebar>
+    <div id="Dashboard" class="main-icon-menu-pane tab-pane show active" role="tabpanel"
+        aria-labelledby="dashboard-tab">
+        <div class="title-box">
+            <h6 class="menu-title">Dashboard</h6>
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+                    href="{% url 'controller:dashboard' %}">Overview</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'zone_list' %}active{% endif %}"
+                    href="{% url 'controller:zone-list' %}">Manage Zones</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'schedule_list' %}active{% endif %}"
+                    href="{% url 'controller:schedule_list' %}">Manage Schedules</a>
+            </li>
+        </ul>
+    </div>
+</div>

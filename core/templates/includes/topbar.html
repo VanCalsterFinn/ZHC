@@ -1,0 +1,49 @@
+{% load static %}
+{% load i18n %}
+
+<div class="topbar">
+    <!-- Navbar -->
+    <nav class="navbar-custom" id="navbar-custom">
+        <!-- Right-side user menu -->
+        <ul class="list-unstyled topbar-nav float-end mb-0">
+
+            <!-- User info / dropdown -->
+            {% if request.user.is_authenticated %}
+            <li class="dropdown">
+                <a class="nav-link dropdown-toggle nav-user" data-bs-toggle="dropdown" href="#" role="button"
+                    aria-haspopup="false" aria-expanded="false">
+                    <div class="d-flex align-items-center">
+                        <div>
+                            <small class="d-block font-11">{% trans 'Welcome' %}</small>
+                            <span class="d-block fw-semibold font-12">
+                                {{ request.user.get_full_name|default:request.user.username }}
+
+                                <i class="mdi mdi-chevron-down"></i>
+                            </span>
+                        </div>
+                    </div>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <form method="post" action="{% url 'core:logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="dropdown-item btn btn-link">
+                            <i class="ti ti-power font-16 me-1 align-text-bottom"></i> {% trans 'Logout' %}
+                        </button>
+                    </form>
+                </div>
+            </li>
+            {% endif %}
+
+        </ul><!--end topbar-nav-->
+
+        <!-- Left-side menu toggle -->
+        <ul class="list-unstyled topbar-nav mb-0">
+            <li>
+                <button class="nav-link button-menu-mobile nav-icon" id="togglemenu">
+                    <i class="ti ti-menu-2"></i>
+                </button>
+            </li>
+        </ul>
+    </nav>
+    <!-- end navbar-->
+</div>

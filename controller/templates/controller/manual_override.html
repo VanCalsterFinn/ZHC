@@ -1,0 +1,6 @@
+{% extends 'controller/base_controller.html' %}
+
+{% block content_dashboard %}
+<h2 class="mb-3">{% if object %}Edit{% else %}New{% endif %} Manual Override</h2>
+{% include "controller/partials/_manual_override_form.html" %}
+{% endblock %}
