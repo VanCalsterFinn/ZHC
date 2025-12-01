@@ -1,20 +1,17 @@
 from django import forms
 from .models import Schedule, ManualOverride, Zone
 
-# Add Bootstrap classes using widgets
-
-
+# Add Bootstrap classes using widget
 class ScheduleForm(forms.ModelForm):
     class Meta:
         model = Schedule
-        fields = ['zone', 'day_of_week', 'start_time',
-                  'end_time', 'target_temperature']
+        fields = ['zones', 'days_of_week', 'start_time', 'end_time', 'target_temperature']
         widgets = {
-            'zone': forms.Select(attrs={'class': 'form-select'}),
-            'day_of_week': forms.Select(attrs={'class': 'form-select'}),
-            'start_time': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
-            'end_time': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
-            'target_temperature': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1'}),
+            'zones': forms.SelectMultiple(attrs={'class': 'form-select select2', 'required': True}),
+            'days_of_week': forms.SelectMultiple(attrs={'class': 'form-select select2', 'required': True}),
+            'start_time': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time', 'required': True}),
+            'end_time': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time', 'required': True}),
+            'target_temperature': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1', 'required': True}),
         }
 
 

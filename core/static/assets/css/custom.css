@@ -187,3 +187,32 @@ form select.form-select {
 .modal-footer .btn {
     min-width: 90px;
 }
+
+/* Time wrapper adjustments */
+.time-wrapper {
+    position: relative;
+}
+
+/* Clock icon styling */
+.time-wrapper .time-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%; /* center vertically */
+    transform: translateY(-50%);
+    pointer-events: none; /* click goes through to input */
+    font-size: 1.2rem;   /* adjust icon size if needed */
+    color: #495057;      /* matches Bootstrap input text color */
+    display: none;        /* hide by default on desktop */
+}
+
+/* Mobile: show the icon */
+@media (max-width: 768px) {
+    .time-wrapper .time-icon {
+        display: inline;
+    }
+    
+    /* Optional: increase input padding on mobile to avoid overlap */
+    .time-wrapper input[type="time"] {
+        padding-right: 2.5rem;
+    }
+}

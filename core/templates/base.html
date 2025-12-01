@@ -16,6 +16,7 @@
     <!-- App css -->
     <link href="{% static 'assets/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'assets/css/icons.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="{% static 'assets/css/app.min.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'assets/css/custom.css' %}" rel="stylesheet" type="text/css" />
 
@@ -97,9 +98,9 @@
                                 <ol class="breadcrumb">
                                     {% for crumb in breadcrumbs %}
                                     {% if crumb.active %}
-                                    <li class="breadcrumb-item active">{{ crumb.title }}</li>
+                                    <li class="breadcrumb-item active">{{ crumb.name }}</li>
                                     {% else %}
-                                    <li class="breadcrumb-item"><a href="{{ crumb.url }}">{{ crumb.title }}</a></li>
+                                    <li class="breadcrumb-item"><a href="{{ crumb.url }}">{{ crumb.name }}</a></li>
                                     {% endif %}
                                     {% endfor %}
                                 </ol>
@@ -125,6 +126,8 @@
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="{% static 'assets/libs/simplebar/simplebar.min.js' %}"></script>
     <script src="{% static 'assets/libs/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+
     <script src="{% static 'assets/js/app.js' %}"></script>
 
     {% block extra_js %}{% endblock %}

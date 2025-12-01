@@ -4,13 +4,16 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-djangorestframework = "*"
-pyserial = "*"
-python-dotenv = "*"
-django = "*"
-python-decouple = "*"
+asgiref = "==3.11.0"
+django = "==5.2.8"
+djangorestframework = "==3.16.1"
+pyserial = "==3.5"
+python-decouple = "==3.8"
+python-dotenv = "==1.2.1"
+sqlparse = "==0.5.4"
+tzdata = "==2025.2"
 
 [dev-packages]
 
 [requires]
-python_version = "3.13"
+python_version = "3.12"

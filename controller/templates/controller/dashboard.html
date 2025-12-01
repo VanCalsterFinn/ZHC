@@ -2,9 +2,52 @@
 {% load static %}
 
 {% block content_dashboard %}
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="zones-container">
-    <!-- JS will populate cards here -->
-</div>
+
+    {% for zone in zones %}
+    <div class="col-md-4 col-sm-6 mb-4">
+        <div class="card shadow-sm p-3">
+            <h3 class="mb-3">{{ zone.name }}</h3>
+
+            <div class="d-flex align-items-center mb-2">
+                <div class="display-3 me-3">
+                    {{ zone.get_active_target|floatformat:1 }}°C
+                </div>
+
+                <form method="post" action="{% url 'controller:override_adjust' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="zone" value="{{ zone.id }}">
+
+                    <div class="d-flex flex-column">
+                        <button name="delta" value="1" class="btn btn-outline-dark mb-2">
+                            <i class="ti ti-plus"></i>
+                        </button>
+
+                        <button name="delta" value="-1" class="btn btn-outline-dark">
+                            <i class="ti ti-minus"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="text-muted">
+                    Current: {{ zone.current_temperature|floatformat:1 }}°C
+                </div>
+                {% if zone.manual_override.active %}
+                    <span class="badge bg-warning text-dark m-2">
+                        Manual Override
+                    </span>
+                {% else %}
+                    <span class="badge bg-success m-2">
+                        Schedule Active
+                    </span>
+                {% endif %}
+            </div>
+
+
+        </div>
+    </div>
+    {% endfor %}
+
 {% endblock %}
 
 {% block extra_js %}
