@@ -26,7 +26,7 @@ router.register(r'overrides', ManualOverrideViewSet)
 router.register(r'logs', TemperatureLogViewSet)
 
 urlpatterns = [
-    path('auth/', include('core.urls', namespace='core')),
+    path('', include('core.urls', namespace='core')),
     path('', include("controller.urls", namespace='controller')),
     path('api/', include(router.urls)),
     path('admin/', admin.site.urls),

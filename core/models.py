@@ -1,3 +1,19 @@
 from django.db import models
 
-# Create your models here.
+class SystemSettings(models.Model):
+    MODE_CHOICES = [
+        ("auto", "Automatic"),
+        ("manual", "Manual"),
+    ]
+
+    mode = models.CharField(max_length=10, choices=MODE_CHOICES, default="auto")
+    eco_temperature = models.FloatField(default=16.0)  # fallback temperature
+
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"System Settings ({self.mode})"
+
+    class Meta:
+        verbose_name = "System Setting"
+        verbose_name_plural = "System Settings"

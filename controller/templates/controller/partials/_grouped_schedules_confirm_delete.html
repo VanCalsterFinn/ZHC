@@ -1,0 +1,21 @@
+<!-- _grouped_schedule_delete_modal.html -->
+<div class="modal fade" id="groupedDeleteModal" tabindex="-1" aria-labelledby="groupedDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-sm">
+            <div class="modal-header bg-danger py-2 px-3">
+                <h5 class="modal-title text-white" id="groupedDeleteModalLabel">Delete Schedule Group</h5>
+                <button type="button" class="btn p-0 ms-2 text-white fs-1" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong>all schedules in this group</strong>?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" id="groupedDeleteForm" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete All</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

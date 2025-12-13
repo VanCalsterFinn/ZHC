@@ -1,9 +1,8 @@
-from django.urls import path, include
+from django.urls import path
 from .views import (
     DashboardView, OverrideAdjustView, ScheduleDeleteView, ZoneDeleteView, ZoneListView, ScheduleListView,
     ScheduleCreateView, ScheduleUpdateView,
-    ManualOverrideListView, ManualOverrideCreateView,
-    ManualOverrideUpdateView, ZoneCreateView, ZoneUpdateView
+    ZoneCreateView, ZoneUpdateView, ZoneScheduleListView, GroupedScheduleListView, GroupedScheduleUpdateView, GroupedScheduleDeleteView
 )
 
 app_name = "controller"
@@ -15,12 +14,17 @@ urlpatterns = [
 
 
     path("zones/", ZoneListView.as_view(), name="zone-list"),
-    path("zones/new/", ZoneCreateView.as_view(), name="zone-create"),
+    path("zones/create/", ZoneCreateView.as_view(), name="zone-create"),
     path("zones/edit/<int:pk>/", ZoneUpdateView.as_view(), name="zone-update"),
     path("zones/delete/<int:pk>/", ZoneDeleteView.as_view(), name="zone-delete"),
+    path('zones/<int:zone_id>/schedules/', ZoneScheduleListView.as_view(), name='zone_schedules'),
+    
+    path('schedules/grouped/', GroupedScheduleListView.as_view(), name='grouped_schedule_list'),
+    path('schedules/group-edit/<str:schedule_ids>/', GroupedScheduleUpdateView.as_view(), name='grouped_schedule_edit'),
+    path('schedules/group-delete/<str:schedule_ids>/', GroupedScheduleDeleteView.as_view(), name='grouped_schedule_delete'),
 
     path('schedules/', ScheduleListView.as_view(), name='schedule_list'),
-    path('schedules/new/', ScheduleCreateView.as_view(), name='schedule_create'),
+    path('schedules/create/', ScheduleCreateView.as_view(), name='schedule_create'),
     path('schedules/edit/<int:pk>/', ScheduleUpdateView.as_view(), name='schedule_update'),
     path('schedules/delete/<int:pk>/', ScheduleDeleteView.as_view(), name='schedule_delete'),
 ]

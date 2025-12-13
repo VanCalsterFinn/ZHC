@@ -1,4 +1,5 @@
-{% load static %}
+{% load static core_tags %}
+
 
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
@@ -16,65 +17,64 @@
     <!-- App css -->
     <link href="{% static 'assets/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'assets/css/icons.min.css' %}" rel="stylesheet" type="text/css" />
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <link href="{% static 'assets/css/app.min.css' %}" rel="stylesheet" type="text/css" />
     <link href="{% static 'assets/css/custom.css' %}" rel="stylesheet" type="text/css" />
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
 
     {% block extra_css %}{% endblock %}
     {% block head_js %}{% endblock %}
 </head>
 
 <body id="body">
-    <!-- Sidebar -->
+    <!-- Left Sidebar -->
     <div class="leftbar-tab-menu">
         <div class="main-icon-menu">
-            <a href="{% url 'controller:dashboard' %}" class="logo logo-metrica d-block text-center">
-                <span>
-                    <img src="{% static 'assets/images/ZHC-logo-crop.png' %}" alt="logo-small" class="logo-sm">
-                </span>
+            <!-- Logo -->
+            <a href="{% url 'controller:dashboard' %}" class="logo d-block text-center mb-5 mt-2">
+                <img src="{% static 'assets/images/ZHC-logo-crop.png' %}" alt="logo" class="logo-sm" style="height: 40px; width: auto;">
             </a>
+            <!-- Icon Menu -->
             <div class="main-icon-menu-body">
                 <div class="position-relative h-100" data-simplebar style="overflow-x: hidden;">
-                    <ul class="nav flex-column" id="icon-sidebar">
-
-                        <!-- Dashboard -->
-                        <li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" title="Dashboard">
-                            <a href="{% url 'controller:dashboard' %}"
-                                class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-                                <i class="ti ti-smart-home menu-icon"></i>
-                            </a>
-                        </li>
-
-                        <!-- Zones -->
-                        <li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" title="Zones">
-                            <a href="{% url 'controller:zone-list' %}"
-                                class="nav-link {% if request.resolver_match.url_name == 'zone_list' %}active{% endif %}">
-                                <i class="ti ti-building menu-icon"></i>
-                            </a>
-                        </li>
-
-                        <!-- Schedules -->
-                        <li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" title="Schedules">
-                            <a href="{% url 'controller:schedule_list' %}"
-                                class="nav-link {% if request.resolver_match.url_name == 'schedule_list' %}active{% endif %}">
-                                <i class="ti ti-calendar menu-icon"></i>
-                            </a>
-                        </li>
-
-                    </ul><!-- end nav -->
-                </div><!-- end simplebar -->
-            </div><!-- end main-icon-menu-body -->
+                    <ul class="nav nav-tabs flex-column align" role="tablist" id="tab-menu">
+                        {% for tab in SIDEBAR_TABS %}
+                            <li class="nav-item" data-bs-toggle="tooltip" data-bs-placement="right" title="{{ tab.title }}" data-bs-trigger="hover">
+                                <a href="#{{ tab.id }}" class="nav-link {% if tab.is_active %}active{% endif %}" data-bs-toggle="tab">
+                                    {% if tab.icon %}<i class="{{ tab.icon }} menu-icon"></i>{% endif %}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
         </div>
+
+        <!-- Sidebar content -->
         <div class="main-menu-inner">
-            <!-- LOGO -->
-            <!--end logo-->
-            <!--end topbar-left-->
-            <!--end logo-->
-            {% block sidebar %}
-            {% include 'includes/base_sidebar.html' %}
-            {% endblock %}
-            <!--end menu-body-->
-            <!-- end main-menu-inner-->
+            <div class="menu-body navbar-vertical tab-content" data-simplebar>
+                <!-- Logo -->
+                <a href="{% url 'controller:dashboard' %}" class="logo d-block text-center mb-5">
+                    <h6 class="sidebar-logo-text mb-0" alt="logo">Zone Heating Control</h6>
+                </a>
+                {% for tab in SIDEBAR_TABS %}
+                    <div id="{{ tab.id }}" class="main-icon-menu-pane tab-pane {% if tab.is_active %}show active{% endif %}" role="tabpanel">
+                        <div class="title-box mb-2">
+                            <h6 class="menu-title">{{ tab.title }}</h6>
+                        </div>
+                        <ul class="nav flex-column">
+                            {% for link in tab.links %}
+                                <li class="nav-item">
+                                    <a href="{% url link.url_name %}" class="nav-link {% if link.is_active %}active{% endif %}">
+                                        {{ link.title }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
     <!-- end Sidebar -->
@@ -126,7 +126,10 @@
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="{% static 'assets/libs/simplebar/simplebar.min.js' %}"></script>
     <script src="{% static 'assets/libs/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
 
     <script src="{% static 'assets/js/app.js' %}"></script>
 

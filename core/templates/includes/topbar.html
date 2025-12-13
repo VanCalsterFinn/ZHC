@@ -32,8 +32,16 @@
                     </form>
                 </div>
             </li>
-            {% endif %}
-
+            <li class="dropdown">
+                <!-- Settings button -->
+                <a class="nav-link arrow-none nav-icon" 
+                href="{% url 'core:settings' %}" 
+                role="button" 
+                aria-label="Settings">
+                    <i class="ti ti-settings"></i>
+                </a>
+            </li>
+            {% endif %}            
         </ul><!--end topbar-nav-->
 
         <!-- Left-side menu toggle -->

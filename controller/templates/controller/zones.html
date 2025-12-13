@@ -2,7 +2,6 @@
 
 {% block content_dashboard %}
 <div class="container-fluid py-4">
-
     <div class="card shadow-sm border-0">
         <div class="card-header bg-transparent border-0 pt-3 pb-2 px-4 d-inline-flex justify-content-between align-items-center">
             <h5 class="fw-semibold mb-0 text-primary">Zones Overview</h5>
@@ -13,7 +12,7 @@
 
         <div class="card-body pt-2 px-4 pb-4">
             <div class="table-responsive">
-                <table class="table table-hover table-striped align-middle mb-0">
+                <table id="zonesTable" class="table table-hover table-striped align-middle mb-0 nowrap" style="width:100%">
                     <thead class="table-light">
                         <tr>
                             <th>Name</th>
@@ -27,13 +26,18 @@
                             <td>{{ zone.name }}</td>
                             <td>{{ zone.pin }}</td>
                             <td class="text-end">
-                                <div class="d-inline-flex align-items-center gap-1">
-                                    <a href="{% url 'controller:zone-update' zone.id %}" class="btn btn-sm btn-outline-primary">
+                                <div class="d-inline-flex align-items-center gap-1 flex-wrap">
+                                    <a href="{% url 'controller:zone-update' zone.id %}" class="btn btn-sm btn-outline-primary mb-1">
                                         <i class="ti ti-edit"></i>
                                     </a>
-                                    <a href="{% url 'controller:zone-delete' zone.id %}" class="btn btn-sm btn-outline-danger">
+                                    <button type="button" 
+                                            class="btn btn-sm btn-outline-danger delete-btn mb-1"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#deleteModal"
+                                            data-id="{{ zone.id }}"
+                                            data-name="{{ zone.name }}">
                                         <i class="ti ti-trash"></i>
-                                    </a>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -48,4 +52,45 @@
         </div>
     </div>
 </div>
+
+<!-- Modal -->
+{% include 'controller/partials/_zone_confirm_delete.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    $('#zonesTable').DataTable({
+        responsive: true,        // enable DataTables responsive plugin
+        paging: true,
+        searching: true,
+        ordering: true,
+        info: true,
+        lengthMenu: [5, 10, 25, 50],
+        pageLength: 25,
+        columnDefs: [
+            { orderable: false, targets: -1 } // disable ordering on Actions column
+        ]
+    });
+
+    // Customize search input
+    $('.dataTables_filter input')
+        .attr('placeholder', 'Search zones...')
+        .css({
+            'display': 'inline-block',
+            'margin-left': '0.5rem',
+            'border-radius': '0.25rem',
+        });
+
+    // Populate delete modal dynamically
+    $('.delete-btn').on('click', function() {
+        var zoneId = $(this).data('id');
+        var zoneName = $(this).data('name');
+
+        $('#modalZoneName').text(zoneName);
+        $('#modalZonePin').text($(this).closest('tr').find('td:eq(1)').text());
+        $('#deleteForm').attr('action', '/zones/delete/' + zoneId + '/');
+    });
+});
+</script>
 {% endblock %}

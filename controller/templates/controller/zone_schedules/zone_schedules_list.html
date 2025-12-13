@@ -3,21 +3,22 @@
 
 {% block content_dashboard %}
 <div class="container-fluid py-4">
+
     <div class="card shadow-sm border-0">
         <div class="card-header bg-transparent border-0 pt-3 pb-2 px-4 d-inline-flex justify-content-between align-items-center">
-            <h5 class="fw-semibold mb-0 text-primary">Schedules Overview</h5>
-            <a href="{% url 'controller:schedule_create' %}" class="btn btn-primary btn-sm d-flex align-items-center p-2">
-                <i class="ti ti-plus"></i> 
+            <h5 class="fw-semibold mb-0 text-primary">
+                {{ zone.name }} - Schedules
+            </h5>
+            <a href="{% url 'controller:schedule_create' %}?zone={{ zone.id }}" class="btn btn-primary btn-sm d-flex align-items-center p-2">
+                <i class="ti ti-plus"></i>
             </a>
         </div>
 
         <div class="card-body pt-2 px-4 pb-4">
-            <!-- Responsive table wrapper -->
             <div class="table-responsive">
-                <table id="schedulesTable" class="table table-hover table-striped align-middle mb-0 nowrap" style="width:100%">
+                <table class="table table-hover table-striped align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th>Zone</th>
                             <th>Day</th>
                             <th>Start</th>
                             <th>End</th>
@@ -29,19 +30,20 @@
                     <tbody>
                         {% for sched in schedules %}
                         <tr>
-                            <td>{{ sched.zone.name }}</td>
                             <td data-order="{{ sched.day_of_week }}">{{ sched.get_day_of_week_display }}</td>
                             <td>{{ sched.start_time|time:"H:i" }}</td>
                             <td>{{ sched.end_time|time:"H:i" }}</td>
                             <td>{{ sched.target_temperature }}°C</td>
                             <td>{{ sched.priority }}</td>
                             <td class="text-end">
-                                <div class="d-inline-flex align-items-center gap-1 flex-wrap">
-                                    <a href="{% url 'controller:schedule_update' sched.id %}" class="btn btn-sm btn-outline-primary mb-1">
+                                <div class="d-inline-flex align-items-center gap-1">
+                                    <a href="{% url 'controller:schedule_update' sched.id %}?zone={{ zone.id }}" class="btn btn-sm btn-outline-primary">
                                         <i class="ti ti-edit"></i>
                                     </a>
+
+                                    <!-- Delete button triggers modal -->
                                     <button type="button" 
-                                            class="btn btn-sm btn-outline-danger mb-1" 
+                                            class="btn btn-sm btn-outline-danger" 
                                             data-bs-toggle="modal" 
                                             data-bs-target="#deleteModal"
                                             data-schedule-id="{{ sched.id }}"
@@ -57,7 +59,7 @@
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="7" class="text-center py-4 text-muted">No schedules yet.</td>
+                            <td colspan="6" class="text-center py-4 text-muted">No schedules yet.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -67,27 +69,23 @@
     </div>
 </div>
 
+<!-- Include modal partial -->
 {% include 'controller/partials/_schedule_confirm_delete.html' %}
 {% endblock %}
 
 {% block extra_js %}
 <script>
 $(document).ready(function() {
-    $('#schedulesTable').DataTable({
-        responsive: true,        // Enable responsive plugin
-        paging: true,
-        searching: true,
-        ordering: true,
-        info: true,
-        lengthMenu: [5, 10, 25, 50],
-        pageLength: 25,
-        order: [[1, "asc"]],    // sort by day_of_week (using data-order)
-        columnDefs: [
-            { orderable: false, targets: -1 } // disable ordering for Actions column
-        ]
+    $('.table').DataTable({
+        "paging": true,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "lengthMenu": [5, 10, 25, 50],
+        "pageLength": 25,
+        "order": [[0, "asc"]] // sort by day_of_week
     });
 
-    // Customize search input
     $('.dataTables_filter input')
         .attr('placeholder', 'Search schedules...')
         .css({
@@ -97,6 +95,7 @@ $(document).ready(function() {
         });
 });
 
+// Delete modal population
 document.addEventListener("DOMContentLoaded", function() {
     const deleteModal = document.getElementById('deleteModal');
     const deleteForm = document.getElementById('deleteForm');
