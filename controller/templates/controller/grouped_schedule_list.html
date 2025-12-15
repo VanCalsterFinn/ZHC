@@ -1,0 +1,104 @@
+{% extends 'controller/base_controller.html' %}
+{% load static %}
+{% load form_tags %}
+
+{% block content_dashboard %}
+<div class="container-fluid py-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-transparent border-0 pt-3 pb-2 px-4 d-inline-flex justify-content-between align-items-center">
+            <h5 class="fw-semibold mb-0 text-primary">Grouped Schedules Overview</h5>
+            <a href="{% url 'controller:schedule_create' %}" class="btn btn-primary btn-sm d-flex align-items-center p-2">
+                <i class="ti ti-plus"></i> 
+            </a>
+        </div>
+
+        <div class="card-body pt-2 px-4 pb-4">
+            <!-- Make table responsive -->
+            <div class="table-responsive">
+                <table id="groupedSchedulesTable" class="table table-hover table-striped align-middle mb-0 nowrap" style="width:100%">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Zones</th>
+                            <th>Days</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Target Temp</th>
+                            <th>Priority</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sched in grouped_schedules %}
+                        <tr>
+                            <td>
+                                {% for zone in sched.zones %}
+                                    {{ zone.name }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for day_name in sched.day_names %}
+                                    {{ day_name }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>{{ sched.start_time|time:"H:i" }}</td>
+                            <td>{{ sched.end_time|time:"H:i" }}</td>
+                            <td>{{ sched.target_temperature }}°C</td>
+                            <td>{{ sched.priority }}</td>
+                            <td class="text-end">
+                                <div class="d-inline-flex align-items-center gap-1">
+                                    <a href="{% url 'controller:grouped_schedule_bulk_edit' sched.schedules|join_ids %}" 
+                                    class="btn btn-sm btn-outline-primary">
+                                        <i class="ti ti-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-outline-danger"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#groupedDeleteModal"
+                                            data-schedule-ids="{{ sched.schedules|join_ids }}">
+                                        <i class="ti ti-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">No schedules yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include "controller/partials/_grouped_schedules_confirm_delete.html" %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const groupedDeleteModal = document.getElementById('groupedDeleteModal');
+const groupedDeleteForm = document.getElementById('groupedDeleteForm');
+
+groupedDeleteModal.addEventListener('show.bs.modal', function(event) {
+    const button = event.relatedTarget;
+    const scheduleIds = button.dataset.scheduleIds;
+    if(scheduleIds) {
+        groupedDeleteForm.action = `/schedules/group-delete/${scheduleIds}/`;
+    } else {
+        console.error("No schedule IDs passed to delete modal!");
+    }
+});
+
+// Initialize DataTable with responsive
+$(document).ready(function() {
+    $('#groupedSchedulesTable').DataTable({
+        responsive: true,
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50],
+        columnDefs: [
+            { orderable: false, targets: -1 } // Disable ordering on Actions column
+        ]
+    });
+});
+</script>
+{% endblock %}

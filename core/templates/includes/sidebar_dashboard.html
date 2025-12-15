@@ -17,6 +17,10 @@
                 <a class="nav-link {% if request.resolver_match.url_name == 'schedule_list' %}active{% endif %}"
                     href="{% url 'controller:schedule_list' %}">Manage Schedules</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.resolver_match.url_name == 'grouped_schedule_list' %}active{% endif %}"
+                    href="{% url 'controller:grouped_schedule_list' %}">Grouped Schedules</a>
+            </li>
         </ul>
     </div>
 </div>

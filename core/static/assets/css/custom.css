@@ -1,55 +1,3 @@
-/* === Custom overrides for active sidebar indicator === */
-/* Table container */
-.dataTables_wrapper .table {
-    border-radius: 0.75rem;
-    overflow: hidden;
-    background: var(--bs-body-bg);
-}
-
-/* Hover effect */
-.dataTables_wrapper .table-hover tbody tr:hover {
-    background-color: rgba(13, 110, 253, 0.05);
-    transition: background 0.2s ease-in-out;
-}
-
-/* Search input */
-.dataTables_filter input {
-    border-radius: 50rem !important;
-    border: 1px solid #dee2e6;
-    padding: 0.375rem 1rem;
-    margin-left: 0.5rem;
-}
-
-/* Pagination buttons */
-.dataTables_wrapper .dataTables_paginate .pagination .page-link {
-    border: none;
-    color: #0d6efd;
-    border-radius: 0.375rem;
-}
-
-.dataTables_wrapper .dataTables_paginate .pagination .page-item.active .page-link {
-    background-color: #0d6efd;
-    color: #fff;
-}
-
-.dataTables_wrapper .dataTables_paginate .pagination .page-link:hover {
-    background-color: rgba(13, 110, 253, 0.1);
-}
-
-/* Info text and “Show entries” dropdown */
-.dataTables_info,
-.dataTables_length label {
-    color: #6c757d !important;
-}
-
-/* Compact spacing */
-table.dataTable>tbody>tr>td {
-    vertical-align: middle;
-    padding: 0.5rem 0.75rem;
-}
-
-
-
 .main-icon-menu .nav-link {
     position: relative;
     display: flex;
@@ -186,4 +134,68 @@ form select.form-select {
 
 .modal-footer .btn {
     min-width: 90px;
+}
+
+/* Time wrapper adjustments */
+.time-wrapper {
+    position: relative;
+}
+
+/* Clock icon styling */
+.time-wrapper .time-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%; /* center vertically */
+    transform: translateY(-50%);
+    pointer-events: none; /* click goes through to input */
+    font-size: 1.2rem;   /* adjust icon size if needed */
+    color: #495057;      /* matches Bootstrap input text color */
+    display: none;        /* hide by default on desktop */
+}
+
+/* Mobile: show the icon */
+@media (max-width: 768px) {
+    .time-wrapper .time-icon {
+        display: inline;
+    }
+    
+    /* Optional: increase input padding on mobile to avoid overlap */
+    .time-wrapper input[type="time"] {
+        padding-right: 2.5rem;
+    }
+
+    .main-icon-menu {
+        top: 60px !important;
+    }
+}
+
+/* Reduce padding/margin on mobile */
+@media (max-width: 768px) {
+    .page-wrapper {
+        padding: 0.25rem !important; /* default is 3rem */
+    }
+    .container-fluid {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    /* Make tables scrollable if they overflow */
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    /* Reduce chart padding inside cards */
+    .card-body {
+        padding: 0.5rem 0.75rem !important;
+    }
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+.sidebar-logo-text {
+    font-family: 'Montserrat', sans-serif;  /* Logo-style font */
+    font-size: 1.2rem;                     /* Slightly larger */
+    font-weight: 700;
+    color: #0d6efd;                        /* Primary color */
+    letter-spacing: 1px;                   /* Makes it feel more logo-like */
+    text-transform: uppercase;             /* Optional, gives a clean branding feel */
 }

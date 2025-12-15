@@ -4,11 +4,8 @@
 <div class="container py-4">
     <div class="card shadow-sm border-0">
         <div class="card-header bg-transparent border-0">
-            <h5 class="fw-semibold mb-0 text-primary">
-                {% if object %}Edit Schedule{% else %}Add Schedule{% endif %}
-            </h5>
+            <h5 class="fw-semibold mb-0 text-primary">Edit Schedule Group</h5>
         </div>
-
         <div class="card-body">
             <form method="post">
                 {% csrf_token %}
@@ -55,7 +52,7 @@
                 <div class="d-flex justify-content-end gap-2">
                     <a href="{% url 'controller:schedule_list' %}" class="btn btn-secondary">Cancel</a>
                     <button type="submit" class="btn btn-primary">
-                        {% if object %}Save Changes{% else %}Add Schedule{% endif %}
+                        Save Changes
                     </button>
                 </div>
             </form>

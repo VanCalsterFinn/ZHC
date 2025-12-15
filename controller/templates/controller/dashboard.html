@@ -1,12 +1,113 @@
 {% extends 'controller/base_controller.html' %}
 {% load static %}
+{% load form_tags %}
 
 {% block content_dashboard %}
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="zones-container">
-    <!-- JS will populate cards here -->
+
+<div class="row g-4">
+    {% for zone in zones %}
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3"> 
+        <div class="card shadow-sm px-3 py-2 h-100 d-flex flex-column justify-content-between">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h3 class="">{{ zone.name }}</h3>
+                <div class="d-flex align-items-center border-1">
+                        <div class="btn-group">
+                            <!-- Three dots trigger -->
+                            <span class="dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" style="cursor:pointer;">
+                                <i class="ti ti-dots-vertical rounded-circle p-2 d-flex align-items-center justify-content-center fs-4 vertical-dots"></i>
+                            </span>
+
+                            <ul class="dropdown-menu dropdown-menu-end p-0">
+                                <!-- Link to schedules for this zone -->
+                                <li class="p-1">
+                                    <a class="dropdown-item" href="{% url 'controller:zone_schedules' zone.id %}">
+                                        <i class="ti ti-calendar-time me-1"></i> Schedules
+                                    </a>
+                                </li>
+
+                                <!-- Optional: delete zone -->
+                                <li><hr class="dropdown-divider m-0"></li>
+
+                                <!-- Optional: edit zone -->
+                                <li class="p-1">
+                                    <a class="dropdown-item" href="{% url 'controller:zone-update' zone.id %}">
+                                        <i class="ti ti-pencil me-1"></i> Edit
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </div>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center mb-2">
+                <div class="display-3 me-3 zone-target-temp" data-zone-id="{{ zone.id }}">
+                    {{ zone.get_active_target|floatformat:1 }}°C
+                </div>
+
+                <div class="d-flex flex-column">
+                    <button class="btn btn-outline-dark mb-2 adjust-btn" data-zone="{{ zone.id }}" data-delta="1">
+                        <i class="ti ti-plus"></i>
+                    </button>
+
+                    <button class="btn btn-outline-dark adjust-btn" data-zone="{{ zone.id }}" data-delta="-1">
+                        <i class="ti ti-minus"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-3 mt-auto">
+                <div class="text-muted">
+                    Current: {{ zone.current_temperature|floatformat:1 }}°C
+                </div>
+
+                <span class="badge bg-success text-white m-2">
+                    Until: {{ next_events|dict_get:zone.id|time:"H:i" }}
+                </span>
+
+            </div>
+
+        </div>
+    </div>
+    {% endfor %}
+
 </div>
+
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'assets/js/dashboard.js' %}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+        const csrfToken = '{{ csrf_token }}';
+
+        document.querySelectorAll('.adjust-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const zoneId = this.dataset.zone;
+                const delta = this.dataset.delta;
+
+                fetch("{% url 'controller:override_adjust' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: new URLSearchParams({zone: zoneId, delta: delta})
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success) {
+                        const display = document.querySelector(`.zone-target-temp[data-zone-id='${zoneId}']`);
+                        if(display) {
+                            display.textContent = parseFloat(data.new_target).toFixed(1) + '°C';
+                        }
+                    } else {
+                        console.error(data.error);
+                    }
+                })
+                .catch(err => console.error(err));
+            });
+        });
+    });
+    </script>
 {% endblock %}
+

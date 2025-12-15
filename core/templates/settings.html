@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-transparent border-0 pt-3 pb-2 px-4">
+            <h5 class="fw-semibold mb-0 text-primary">System Settings</h5>
+        </div>
+        <div class="card-body pt-2 px-4 pb-4">
+            <form id="settingsForm">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Mode</label>
+                    <div class="btn-group w-100" role="group" aria-label="Mode toggle">
+                        <input type="radio" class="btn-check" name="mode" id="modeAutomatic" value="auto"
+                            {% if form.instance.mode == 'auto' %}checked{% endif %}>
+                        <label class="btn btn-outline-primary" for="modeAutomatic">Automatic</label>
+
+                        <input type="radio" class="btn-check" name="mode" id="modeManual" value="manual"
+                            {% if form.instance.mode == 'manual' %}checked{% endif %}>
+                        <label class="btn btn-outline-primary" for="modeManual">Manual</label>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="eco_temperature" class="form-label fw-semibold">Eco (Fallback) Temperature</label>
+                    <div class="input-group" style="max-width: 120px;">
+                        {{ form.eco_temperature }}
+                        <span class="input-group-text">°C</span>
+                    </div>
+                </div>
+            </form>
+            <div id="settingsStatus" class="small text-success mt-2" style="display:none;">Saved</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const form = document.getElementById('settingsForm');
+    const status = document.getElementById('settingsStatus');
+    const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    // Helper to send data
+    const sendUpdate = (data) => {
+        // Validate eco_temperature before sending
+        if(data.eco_temperature !== undefined){
+            let val = parseFloat(data.eco_temperature);
+            if(isNaN(val) || val < 5) val = 5;
+            if(val > 20) val = 20;
+            data.eco_temperature = val;
+            // Update input to reflect clamped value
+            document.getElementById('id_eco_temperature').value = val;
+        }
+
+        fetch("{% url 'core:update_settings' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': csrfToken
+            },
+            body: new URLSearchParams(data)
+        }).then(res => {
+            if(res.ok){
+                status.style.display = 'inline';
+                setTimeout(() => status.style.display = 'none', 1500);
+            } else {
+                console.error('Update failed');
+            }
+        }).catch(err => console.error(err));
+    };
+
+    // Instant submit for mode toggle
+    form.querySelectorAll('input[name="mode"]').forEach(input => {
+        input.addEventListener('change', () => {
+            sendUpdate({mode: input.value});
+        });
+    });
+
+    // Delayed submit for eco_temperature
+    const ecoInput = document.getElementById('id_eco_temperature');
+    let timer;
+    ecoInput.addEventListener('input', () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            sendUpdate({eco_temperature: ecoInput.value});
+        }, 1500);
+    });
+});
+</script>
+
+{% endblock %}

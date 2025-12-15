@@ -1,9 +1,10 @@
-from django.urls import path, include
+from django.urls import path
+
+from .utils import zone_schedule_api
 from .views import (
-    DashboardView, ScheduleDeleteView, ZoneDeleteView, ZoneListView, ScheduleListView,
+    DashboardView, OverrideAdjustView, ScheduleDeleteView, ZoneDeleteView, ZoneListView, ScheduleListView,
     ScheduleCreateView, ScheduleUpdateView,
-    ManualOverrideListView, ManualOverrideCreateView,
-    ManualOverrideUpdateView, ZoneCreateView, ZoneUpdateView
+    ZoneCreateView, ZoneUpdateView, ZoneScheduleListView, GroupedScheduleListView, GroupedScheduleBulkEditView, GroupedScheduleDeleteView
 )
 
 app_name = "controller"
@@ -11,24 +12,26 @@ app_name = "controller"
 urlpatterns = [
     # Frontend
     path('', DashboardView.as_view(), name='dashboard'),
+    path("overrides/adjust/", OverrideAdjustView.as_view(), name="override_adjust"),
+
 
     path("zones/", ZoneListView.as_view(), name="zone-list"),
-    path("zones/add/", ZoneCreateView.as_view(), name="zone-add"),
-    path("zones/<int:pk>/edit/", ZoneUpdateView.as_view(), name="zone-edit"),
-    path("zones/<int:pk>/delete/", ZoneDeleteView.as_view(), name="zone-delete"),
+    path("zones/create/", ZoneCreateView.as_view(), name="zone-create"),
+    path("zones/edit/<int:pk>/", ZoneUpdateView.as_view(), name="zone-update"),
+    path("zones/delete/<int:pk>/", ZoneDeleteView.as_view(), name="zone-delete"),
+    path('zones/<int:zone_id>/schedules/', ZoneScheduleListView.as_view(), name='zone_schedules'),
+    path('api/zone/<int:zone_id>/schedule/', zone_schedule_api, name='api_zone_schedule'),
+
+    path('schedules/grouped/', GroupedScheduleListView.as_view(), name='grouped_schedule_list'),
+    path(
+        "schedules/bulk-edit/<str:schedule_ids>/",
+        GroupedScheduleBulkEditView.as_view(),
+        name="grouped_schedule_bulk_edit"
+    ),
+    path('schedules/group-delete/<str:schedule_ids>/', GroupedScheduleDeleteView.as_view(), name='grouped_schedule_delete'),
 
     path('schedules/', ScheduleListView.as_view(), name='schedule_list'),
-    path('schedules/new/', ScheduleCreateView.as_view(), name='schedule_create'),
-    path('schedules/edit/<int:pk>/',
-         ScheduleUpdateView.as_view(), name='schedule_update'),
-    path('schedules/delete/<int:pk>/',
-         ScheduleDeleteView.as_view(), name='schedule_delete'),
-
-
-    path('manual_override/', ManualOverrideListView.as_view(),
-         name='manual_override'),
-    path('manual_override/new/', ManualOverrideCreateView.as_view(),
-         name='manual_override_create'),
-    path('manual_override/edit/<int:pk>/',
-         ManualOverrideUpdateView.as_view(), name='manual_override_update'),
+    path('schedules/create/', ScheduleCreateView.as_view(), name='schedule_create'),
+    path('schedules/edit/<int:pk>/', ScheduleUpdateView.as_view(), name='schedule_update'),
+    path('schedules/delete/<int:pk>/', ScheduleDeleteView.as_view(), name='schedule_delete'),
 ]

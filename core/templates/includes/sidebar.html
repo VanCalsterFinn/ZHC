@@ -1,45 +1,84 @@
-{% load static %}
-
-<div class="menu-body navbar-vertical tab-content" data-simplebar>
-    <div id="Dashboard" class="main-icon-menu-pane tab-pane show active" role="tabpanel">
-        <div class="title-box">
-            <h6 class="menu-title">Dashboard</h6>
-        </div>
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
-                    href="{% url 'controller:dashboard' %}">
-                    <i class="ti ti-smart-home menu-icon"></i> Overview
-                </a>
-            </li>
-        </ul>
+<div class="menu-body navbar-vertical" data-simplebar>
+    <!-- Icon Menu -->
+    <div class="icon-menu d-flex flex-column align-items-center py-3">
+        <!-- Dashboard -->
+        <a class="nav-link mb-3 active" data-bs-toggle="tab" href="#Dashboard" role="tab">
+            <i class="ti ti-smart-home fs-4"></i>
+        </a>
+        <!-- Zones -->
+        <a class="nav-link mb-3" data-bs-toggle="tab" href="#Zones" role="tab">
+            <i class="ti ti-building fs-4"></i>
+        </a>
+        <!-- Schedules -->
+        <a class="nav-link mb-3" data-bs-toggle="tab" href="#Schedules" role="tab">
+            <i class="ti ti-calendar fs-4"></i>
+        </a>
     </div>
 
-    <div id="Zones" class="main-icon-menu-pane tab-pane" role="tabpanel">
-        <div class="title-box">
-            <h6 class="menu-title">Zones</h6>
+    <!-- Tab Panes -->
+    <div class="tab-content mt-4">
+        <!-- Dashboard Pane -->
+        <div id="Dashboard" class="tab-pane fade show active" role="tabpanel">
+            <div class="title-box">
+                <h6 class="menu-title">Dashboard</h6>
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+                        href="{% url 'controller:dashboard' %}">
+                        Overview
+                    </a>
+                </li>
+            </ul>
         </div>
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link {% if request.resolver_match.url_name == 'zone_list' %}active{% endif %}"
-                    href="{% url 'controller:zone_list' %}">
-                    <i class="ti ti-building menu-icon"></i> Zones
-                </a>
-            </li>
-        </ul>
-    </div>
 
-    <div id="Schedules" class="main-icon-menu-pane tab-pane" role="tabpanel">
-        <div class="title-box">
-            <h6 class="menu-title">Schedules</h6>
+        <!-- Zones Pane -->
+        <div id="Zones" class="tab-pane fade" role="tabpanel">
+            <div class="title-box">
+                <h6 class="menu-title">Zones</h6>
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'zone_list' %}active{% endif %}"
+                        href="{% url 'controller:zone_list' %}">
+                        Zones
+                    </a>
+                </li>
+            </ul>
         </div>
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link {% if request.resolver_match.url_name == 'schedule_list' %}active{% endif %}"
-                    href="{% url 'controller:schedule_list' %}">
-                    <i class="ti ti-calendar menu-icon"></i> Schedules
-                </a>
-            </li>
-        </ul>
+
+        <!-- Schedules Pane -->
+        <div id="Schedules" class="tab-pane fade" role="tabpanel">
+            <div class="title-box">
+                <h6 class="menu-title">Schedules</h6>
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link {% if request.resolver_match.url_name in ['schedule_list', 'grouped_schedule_list'] %}active{% endif %}"
+                        href="{% url 'controller:schedule_list' %}">
+                        Schedules
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
+
+<!-- Optional: keep the active tab on reload -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const tabLinks = document.querySelectorAll('.icon-menu .nav-link');
+    const activeTab = localStorage.getItem('activeVerticalTab');
+
+    if (activeTab) {
+        const triggerEl = document.querySelector(`.icon-menu .nav-link[href="${activeTab}"]`);
+        if (triggerEl) bootstrap.Tab.getOrCreateInstance(triggerEl).show();
+    }
+
+    tabLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            localStorage.setItem('activeVerticalTab', link.getAttribute('href'));
+        });
+    });
+});
+</script>
