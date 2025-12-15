@@ -1,64 +1,88 @@
 {% extends 'controller/base_controller.html' %}
+{% load static %}
+{% load form_tags %}
+
+
+{% block extra_css %}
+<style>
+    /* Metrica-friendly time input with icon */
+    .position-relative .custom-clock {
+        font-size: 1rem;
+        padding-right: 2.5rem;
+    }
+</style>
+{% endblock %}
 
 {% block content_dashboard %}
-<div class="container py-4">
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-transparent border-0">
-            <h5 class="fw-semibold mb-0 text-primary">
-                {% if object %}Edit Schedule{% else %}Add Schedule{% endif %}
-            </h5>
-        </div>
-
-        <div class="card-body">
-            <form method="post">
-                {% csrf_token %}
-
-                <!-- Zones Multi-Select -->
-                <div class="mb-3">
-                    {{ form.zones.label_tag }}
-                    {{ form.zones }}
-                    {% for error in form.zones.errors %}
-                        <div class="text-danger">{{ error }}</div>
-                    {% endfor %}
+<div class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card">
+                <div class="card-header bg-transparent border-0">
+                    <h5 class="fw-semibold mb-0 text-primary">
+                        {% if object %}Edit Schedule{% else %}Add Schedule{% endif %}
+                    </h5>
                 </div>
+                <div class="card-body">
 
-                <!-- Days Multi-Select -->
-                <div class="mb-3">
-                    {{ form.days_of_week.label_tag }}
-                    {{ form.days_of_week }}
-                    {% for error in form.days_of_week.errors %}
-                        <div class="text-danger">{{ error }}</div>
-                    {% endfor %}
-                </div>
+                    <form method="post">
+                        {% csrf_token %}
 
-                <!-- Other fields (start_time, end_time, target_temperature, priority) -->
-                {% for field in form %}
-                    {% if field.name not in 'zones days_of_week' %}
+                        <!-- Zones Multi-Select -->
+                        <div class="mb-3">
+                            {{ form.zones.label_tag }}
+                            {{ form.zones|add_class:"form-select select2" }}
+                            {% for error in form.zones.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Days Multi-Select -->
+                        <div class="mb-3">
+                            {{ form.days_of_week.label_tag }}
+                            {{ form.days_of_week|add_class:"form-select select2" }}
+                            {% for error in form.days_of_week.errors %}
+                            <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Other Fields -->
+                        {% for field in form %}
+                        {% if field.name != 'zones' and field.name != 'days_of_week' %}
                         <div class="mb-3">
                             {{ field.label_tag }}
                             {% if field.field.widget.input_type == 'time' %}
-                                <div class="position-relative time-wrapper">
-                                    {{ field }}
-                                    <span class="position-absolute time-icon"><i class="ti ti-clock"></i></span>
-                                </div>
+                            <div class="position-relative">
+                                {{ field|add_class:"form-control" }} <!-- Add padding-end so icon fits inside -->
+                                <!-- Clock icon only on mobile (<768px) -->
+                                <span
+                                    class="position-absolute top-50 end-0 translate-middle-y text-muted d-inline d-md-none me-2">
+                                    <i class="ti ti-clock"></i>
+                                </span>
+                            </div>
                             {% else %}
-                                {{ field }}
+                            {{ field|add_class:"form-control" }}
                             {% endif %}
                             {% for error in field.errors %}
-                                <div class="text-danger">{{ error }}</div>
+                            <div class="text-danger small">{{ error }}</div>
                             {% endfor %}
                         </div>
-                    {% endif %}
-                {% endfor %}
+                        {% endif %}
+                        {% endfor %}
 
-                <!-- Form actions -->
-                <div class="d-flex justify-content-end gap-2">
-                    <a href="{% url 'controller:schedule_list' %}" class="btn btn-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-primary">
-                        {% if object %}Save Changes{% else %}Add Schedule{% endif %}
-                    </button>
+
+                        <!-- Form Actions -->
+                        <div class="d-flex justify-content-end gap-2 mt-3">
+                            <a href="{% url 'controller:schedule_list' %}" class="btn btn-light">Cancel</a>
+                            <button type="submit" class="btn btn-primary">
+                                {% if object %}Save Changes{% else %}Add Schedule{% endif %}
+                            </button>
+                        </div>
+
+                    </form>
+
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
@@ -66,7 +90,7 @@
 
 {% block extra_js %}
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         // Initialize Select2 for multi-select fields
         $('.select2').select2({
             placeholder: "Select options",

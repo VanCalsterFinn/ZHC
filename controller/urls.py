@@ -4,7 +4,8 @@ from .utils import zone_schedule_api
 from .views import (
     DashboardView, OverrideAdjustView, ScheduleDeleteView, ZoneDeleteView, ZoneListView, ScheduleListView,
     ScheduleCreateView, ScheduleUpdateView,
-    ZoneCreateView, ZoneUpdateView, ZoneScheduleListView, GroupedScheduleListView, GroupedScheduleBulkEditView, GroupedScheduleDeleteView
+    ZoneCreateView, ZoneUpdateView, ZoneScheduleListView, GroupedScheduleListView, GroupedScheduleBulkEditView, GroupedScheduleDeleteView,
+    ZoneScheduleGraphView
 )
 
 app_name = "controller"
@@ -21,6 +22,7 @@ urlpatterns = [
     path("zones/delete/<int:pk>/", ZoneDeleteView.as_view(), name="zone-delete"),
     path('zones/<int:zone_id>/schedules/', ZoneScheduleListView.as_view(), name='zone_schedules'),
     path('api/zone/<int:zone_id>/schedule/', zone_schedule_api, name='api_zone_schedule'),
+    path('zone/<int:zone_id>/graph/', ZoneScheduleGraphView.as_view(), name='zone_schedules_graph'),
 
     path('schedules/grouped/', GroupedScheduleListView.as_view(), name='grouped_schedule_list'),
     path(

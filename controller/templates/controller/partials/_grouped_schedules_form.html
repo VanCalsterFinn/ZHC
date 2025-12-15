@@ -1,4 +1,17 @@
 {% extends 'controller/base_controller.html' %}
+{% load static %}
+{% load form_tags %}
+
+
+
+{% block extra_css %}
+<style>
+    /* Metrica-friendly time input with icon */
+    .position-relative .custom-clock {
+        font-size: 1rem;
+    }
+</style>
+{% endblock %}
 
 {% block content_dashboard %}
 <div class="container py-4">
@@ -13,39 +26,42 @@
                 <!-- Zones Multi-Select -->
                 <div class="mb-3">
                     {{ form.zones.label_tag }}
-                    {{ form.zones }}
+                    {{ form.zones|add_class:"form-select select2" }}
                     {% for error in form.zones.errors %}
-                        <div class="text-danger">{{ error }}</div>
+                    <div class="text-danger">{{ error }}</div>
                     {% endfor %}
                 </div>
 
                 <!-- Days Multi-Select -->
                 <div class="mb-3">
                     {{ form.days_of_week.label_tag }}
-                    {{ form.days_of_week }}
+                    {{ form.days_of_week|add_class:"form-select select2" }}
                     {% for error in form.days_of_week.errors %}
-                        <div class="text-danger">{{ error }}</div>
+                    <div class="text-danger">{{ error }}</div>
                     {% endfor %}
                 </div>
 
                 <!-- Other fields (start_time, end_time, target_temperature, priority) -->
                 {% for field in form %}
-                    {% if field.name not in 'zones days_of_week' %}
-                        <div class="mb-3">
-                            {{ field.label_tag }}
-                            {% if field.field.widget.input_type == 'time' %}
-                                <div class="position-relative time-wrapper">
-                                    {{ field }}
-                                    <span class="position-absolute time-icon"><i class="ti ti-clock"></i></span>
-                                </div>
-                            {% else %}
-                                {{ field }}
-                            {% endif %}
-                            {% for error in field.errors %}
-                                <div class="text-danger">{{ error }}</div>
-                            {% endfor %}
-                        </div>
+                {% if field.name not in 'zones days_of_week' %}
+                <div class="mb-3">
+                    {{ field.label_tag }}
+                    {% if field.field.widget.input_type == 'time' %}
+                    <div class="position-relative time-wrapper">
+                        {{ field }}
+                        <span
+                            class="position-absolute top-50 end-0 translate-middle-y text-muted d-inline d-md-none me-2">
+                            <i class="ti ti-clock custom-clock"></i>
+                        </span>
+                    </div>
+                    {% else %}
+                    {{ field }}
                     {% endif %}
+                    {% for error in field.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
                 {% endfor %}
 
                 <!-- Form actions -->
@@ -63,7 +79,7 @@
 
 {% block extra_js %}
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         // Initialize Select2 for multi-select fields
         $('.select2').select2({
             placeholder: "Select options",

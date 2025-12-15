@@ -1,6 +1,6 @@
 from collections import defaultdict
 from django.http import Http404
-from django.shortcuts import get_list_or_404, redirect, render
+from django.shortcuts import get_list_or_404, get_object_or_404, redirect, render
 from django.views import View
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, FormView
 from django.urls import reverse_lazy
@@ -20,6 +20,7 @@ from django.http import Http404
 MAX_TEMP = 30.0
 MIN_TEMP = 5.0   # optional, but recommended
 
+
 def get_active_overrides():
     now = timezone.now()
     return list(
@@ -27,6 +28,7 @@ def get_active_overrides():
             Q(active_until__gte=now) | Q(active_until__isnull=True)
         )
     )
+
 
 class DashboardView(ListView):
     model = Zone
@@ -46,7 +48,8 @@ class DashboardView(ListView):
         next_events = {}
         for zone in zones:
             # Next manual override
-            next_manual = ManualOverride.objects.filter(zone=zone, active_from__gt=now).order_by('active_from').first()
+            next_manual = ManualOverride.objects.filter(
+                zone=zone, active_from__gt=now).order_by('active_from').first()
 
             # Next schedule for today or next days
             today = now.weekday()
@@ -86,6 +89,7 @@ class DashboardView(ListView):
             ]
         })
         return context
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class OverrideAdjustView(View):
@@ -177,7 +181,8 @@ class ZoneCreateView(CreateView):
             "page_title": "Create Zone",
             "breadcrumbs": [
                 {"name": "Home", "url": "/", "active": False},
-                {"name": "Zones", "url": reverse_lazy("zone-list"), "active": False},
+                {"name": "Zones", "url": reverse_lazy(
+                    "zone-list"), "active": False},
                 {"name": "Create", "url": None, "active": True},
             ]
         })
@@ -198,7 +203,8 @@ class ZoneUpdateView(UpdateView):
             "page_title": "Update Zone",
             "breadcrumbs": [
                 {"name": "Home", "url": "/", "active": False},
-                {"name": "Zones", "url": reverse_lazy("zone-list"), "active": False},
+                {"name": "Zones", "url": reverse_lazy(
+                    "zone-list"), "active": False},
                 {"name": "Update", "url": None, "active": True},
             ]
         })
@@ -209,6 +215,7 @@ class ZoneDeleteView(DeleteView):
     model = Zone
     template_name = "controller/partials/_zone_confirm_delete.html"
     success_url = reverse_lazy("zone-list")
+
 
 class ZoneScheduleListView(ListView):
     model = Schedule
@@ -235,8 +242,10 @@ class ZoneScheduleListView(ListView):
             ]
         })
         return context
-    
+
 # Schedule views
+
+
 class ScheduleListView(ListView):
     model = Schedule
     template_name = "controller/schedules.html"
@@ -245,7 +254,7 @@ class ScheduleListView(ListView):
     def get_queryset(self):
         # Sort all schedules by day_of_week first, then start_time
         return Schedule.objects.all().order_by('day_of_week', 'start_time')
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         zones = Zone.objects.all()
@@ -275,7 +284,8 @@ class ScheduleCreateView(CreateView):
             "page_title": "Create Schedule",
             "breadcrumbs": [
                 {"name": "Home", "url": "/", "active": False},
-                {"name": "Schedules", "url": reverse_lazy('controller:schedule_list'), "active": False},
+                {"name": "Schedules", "url": reverse_lazy(
+                    'controller:schedule_list'), "active": False},
                 {"name": "Create", "url": None, "active": True},
             ]
         })
@@ -304,19 +314,20 @@ class ScheduleUpdateView(UpdateView):
             "page_title": "Update Schedule",
             "breadcrumbs": [
                 {"name": "Home", "url": "/", "active": False},
-                {"name": "Schedules", "url": reverse_lazy('controller:schedule_list'), "active": False},
+                {"name": "Schedules", "url": reverse_lazy(
+                    'controller:schedule_list'), "active": False},
                 {"name": "Update", "url": None, "active": True},
             ]
         })
         return context
-    
+
     def get_form_kwargs(self):
-        """Pass the initial_zone to the form if ?zone=<id> is in the URL"""
         kwargs = super().get_form_kwargs()
         zone_id = self.request.GET.get('zone')
         if zone_id:
             kwargs['initial_zone'] = int(zone_id)
         return kwargs
+
 
 class ScheduleDeleteView(DeleteView):
     model = Schedule
@@ -347,21 +358,24 @@ class ManualOverrideUpdateView(UpdateView):
     template_name = "controller/manual_override_form.html"
     success_url = reverse_lazy('manual_override')
 
+
 class GroupedScheduleListView(TemplateView):
     template_name = "controller/grouped_schedule_list.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
+
         # Fetch all schedules
         schedules = Schedule.objects.select_related('zone').all().order_by(
             'start_time', 'end_time', 'target_temperature', 'priority'
         )
 
         # Group schedules by identical settings
-        grouped = defaultdict(lambda: {'zones': set(), 'days': set(), 'schedules': []})
+        grouped = defaultdict(
+            lambda: {'zones': set(), 'days': set(), 'schedules': []})
         for sched in schedules:
-            key = (sched.start_time, sched.end_time, sched.target_temperature, sched.priority)
+            key = (sched.start_time, sched.end_time,
+                   sched.target_temperature, sched.priority)
             grouped[key]['zones'].add(sched.zone)         # set method
             grouped[key]['days'].add(sched.day_of_week)  # set method
             grouped[key]['schedules'].append(sched)
@@ -386,12 +400,12 @@ class GroupedScheduleListView(TemplateView):
             "page_title": "Grouped Schedules",
             "breadcrumbs": [
                 {"name": "Home", "url": "/", "active": False},
-                {"name": "Schedules", "url": reverse_lazy('controller:schedule_list'), "active": False},
+                {"name": "Schedules", "url": reverse_lazy(
+                    'controller:schedule_list'), "active": False},
                 {"name": "Grouped Schedules", "url": None, "active": True},
             ]
         })
         return context
-
 
 
 class GroupedScheduleBulkEditView(FormView):
@@ -424,10 +438,9 @@ class GroupedScheduleBulkEditView(FormView):
         )
 
         # Pre-select days as strings
-        kwargs["initial_days"] = [
-            str(d)
-            for d in self.schedules.values_list("day_of_week", flat=True).distinct()
-        ]
+        kwargs["initial_days"] = list(
+            self.schedules.values_list("day_of_week", flat=True).distinct()
+        )
 
         return kwargs
 
@@ -441,28 +454,41 @@ class GroupedScheduleBulkEditView(FormView):
         target_temperature = cleaned["target_temperature"]
         priority = cleaned["priority"]
 
-        # Update or create schedules for all selected zones/days for the given start/end time
-        for zone in selected_zones:
-            for day in selected_days:
-                sched, created = Schedule.objects.get_or_create(
-                    zone=zone,
-                    day_of_week=day,
-                    start_time=start_time,
-                    end_time=end_time,
-                    defaults={
-                        "target_temperature": target_temperature,
-                        "priority": priority
-                    }
-                )
-                if not created:
-                    # Update existing schedule
-                    sched.target_temperature = target_temperature
-                    sched.priority = priority
-                    sched.save()
+        # Build sets for comparison
+        original_keys = {
+            (s.zone_id, s.day_of_week): s
+            for s in self.schedules
+        }
+        submitted_keys = {
+            (zone.id, day) for zone in selected_zones for day in selected_days
+        }
 
-        # Do NOT delete any other schedules
+        # 1. Update existing schedules that are still selected
+        for key in submitted_keys & original_keys.keys():
+            sched = original_keys[key]
+            sched.start_time = start_time
+            sched.end_time = end_time
+            sched.target_temperature = target_temperature
+            sched.priority = priority
+            sched.save()
+
+        # 2. Delete schedules that were removed
+        for key in original_keys.keys() - submitted_keys:
+            original_keys[key].delete()
+
+        # 3. Create new schedules for newly added zone/day combos
+        for key in submitted_keys - original_keys.keys():
+            zone_id, day = key
+            Schedule.objects.create(
+                zone_id=zone_id,
+                day_of_week=day,
+                start_time=start_time,
+                end_time=end_time,
+                target_temperature=target_temperature,
+                priority=priority
+            )
+
         return redirect("controller:grouped_schedule_list")
-
 
 
 class GroupedScheduleDeleteView(View):
@@ -472,3 +498,16 @@ class GroupedScheduleDeleteView(View):
         for sched in schedules:
             sched.delete()
         return redirect('controller:grouped_schedule_list')
+
+
+class ZoneScheduleGraphView(TemplateView):
+    template_name = "controller/zone_schedules/zone_schedules_graph.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        zone_id = kwargs.get('zone_id')
+        zone = get_object_or_404(Zone, id=zone_id)
+        context['zone'] = zone
+        # optional: eco temperature
+        context['eco_temperature'] = 18
+        return context

@@ -2,6 +2,8 @@ from django import forms
 from .models import Schedule, ManualOverride, Zone
 
 # Add Bootstrap classes using widget
+
+
 class ScheduleForm(forms.ModelForm):
     # Multiple zones
     zones = forms.ModelMultipleChoiceField(
@@ -41,26 +43,29 @@ class ScheduleForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-            initial_zone = kwargs.pop('initial_zone', None)
-            initial_days = kwargs.pop('initial_days', None)
-            super().__init__(*args, **kwargs)
+        initial_zone = kwargs.pop('initial_zone', None)
+        initial_days = kwargs.pop('initial_days', None)
+        super().__init__(*args, **kwargs)
 
-            # Pre-select zones
-            if initial_zone:
-                self.fields['zones'].initial = [initial_zone] if isinstance(initial_zone, int) else initial_zone
+        # Pre-select zones
+        if initial_zone:
+            self.fields['zones'].initial = Zone.objects.filter(pk=initial_zone)
+        elif self.instance.pk:
+            self.fields['zones'].initial = [self.instance.zone]
 
-            # Pre-select days
-            if initial_days:
-                self.fields['days_of_week'].initial = initial_days
-            elif self.instance.pk:
-                # When editing, select the existing day
-                self.fields['days_of_week'].initial = [self.instance.day_of_week]
+        # Pre-select days
+        if initial_days:
+            self.fields['days_of_week'].initial = initial_days
+        elif self.instance.pk:
+            # When editing, select the existing day
+            self.fields['days_of_week'].initial = [
+                self.instance.day_of_week]
 
     def save(self, commit=True):
         zones = self.cleaned_data.pop('zones')
         days = self.cleaned_data.pop('days_of_week')
         instance = super().save(commit=False)
-        
+
         if commit:
             for zone in zones:
                 for day in days:
@@ -88,7 +93,6 @@ class ManualOverrideForm(forms.ModelForm):
         }
 
 
-
 class ZoneForm(forms.ModelForm):
     class Meta:
         model = Zone
@@ -97,7 +101,6 @@ class ZoneForm(forms.ModelForm):
             "name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Zone Name"}),
             "pin": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Arduino Pin"}),
         }
-
 
 
 class ScheduleBatchForm(forms.ModelForm):
@@ -136,16 +139,13 @@ class ScheduleBatchForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        # POP CUSTOM KWARGS FIRST
         initial_zones = kwargs.pop('initial_zones', None)
         initial_days = kwargs.pop('initial_days', None)
-
         super().__init__(*args, **kwargs)
 
-        # Preselect zones
         if initial_zones is not None:
-            self.fields['zones'].initial = initial_zones
+            self.fields['zones'].initial = initial_zones  # IDs are fine
 
-        # Preselect days
         if initial_days is not None:
+            # must be ints, not str
             self.fields['days_of_week'].initial = initial_days
