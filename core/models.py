@@ -1,3 +1,4 @@
+from django import forms
 from django.db import models
 
 class SystemSettings(models.Model):
@@ -17,3 +18,9 @@ class SystemSettings(models.Model):
     class Meta:
         verbose_name = "System Setting"
         verbose_name_plural = "System Settings"
+
+    def clean(self):
+        if not (5 <= self.eco_temperature <= 20):
+            raise forms.ValidationError({
+                "eco_temperature": "Eco temperature must be between 5°C and 20°C."
+            })

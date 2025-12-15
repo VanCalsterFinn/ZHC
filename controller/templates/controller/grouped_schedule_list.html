@@ -46,7 +46,7 @@
                             <td>{{ sched.priority }}</td>
                             <td class="text-end">
                                 <div class="d-inline-flex align-items-center gap-1">
-                                    <a href="{% url 'controller:grouped_schedule_edit' sched.schedules|join_ids %}" 
+                                    <a href="{% url 'controller:grouped_schedule_bulk_edit' sched.schedules|join_ids %}" 
                                     class="btn btn-sm btn-outline-primary">
                                         <i class="ti ti-edit"></i>
                                     </a>

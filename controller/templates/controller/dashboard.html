@@ -41,24 +41,19 @@
             </div>
 
             <div class="d-flex align-items-center mb-2">
-                <div class="display-3 me-3">
+                <div class="display-3 me-3 zone-target-temp" data-zone-id="{{ zone.id }}">
                     {{ zone.get_active_target|floatformat:1 }}°C
                 </div>
 
-                <form method="post" action="{% url 'controller:override_adjust' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="zone" value="{{ zone.id }}">
+                <div class="d-flex flex-column">
+                    <button class="btn btn-outline-dark mb-2 adjust-btn" data-zone="{{ zone.id }}" data-delta="1">
+                        <i class="ti ti-plus"></i>
+                    </button>
 
-                    <div class="d-flex flex-column">
-                        <button name="delta" value="1" class="btn btn-outline-dark mb-2">
-                            <i class="ti ti-plus"></i>
-                        </button>
-
-                        <button name="delta" value="-1" class="btn btn-outline-dark">
-                            <i class="ti ti-minus"></i>
-                        </button>
-                    </div>
-                </form>
+                    <button class="btn btn-outline-dark adjust-btn" data-zone="{{ zone.id }}" data-delta="-1">
+                        <i class="ti ti-minus"></i>
+                    </button>
+                </div>
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-3 mt-auto">
@@ -81,5 +76,38 @@
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'assets/js/dashboard.js' %}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+        const csrfToken = '{{ csrf_token }}';
+
+        document.querySelectorAll('.adjust-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const zoneId = this.dataset.zone;
+                const delta = this.dataset.delta;
+
+                fetch("{% url 'controller:override_adjust' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: new URLSearchParams({zone: zoneId, delta: delta})
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success) {
+                        const display = document.querySelector(`.zone-target-temp[data-zone-id='${zoneId}']`);
+                        if(display) {
+                            display.textContent = parseFloat(data.new_target).toFixed(1) + '°C';
+                        }
+                    } else {
+                        console.error(data.error);
+                    }
+                })
+                .catch(err => console.error(err));
+            });
+        });
+    });
+    </script>
 {% endblock %}
+

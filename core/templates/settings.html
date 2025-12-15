@@ -46,6 +46,16 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Helper to send data
     const sendUpdate = (data) => {
+        // Validate eco_temperature before sending
+        if(data.eco_temperature !== undefined){
+            let val = parseFloat(data.eco_temperature);
+            if(isNaN(val) || val < 5) val = 5;
+            if(val > 20) val = 20;
+            data.eco_temperature = val;
+            // Update input to reflect clamped value
+            document.getElementById('id_eco_temperature').value = val;
+        }
+
         fetch("{% url 'core:update_settings' %}", {
             method: 'POST',
             headers: {
@@ -54,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function() {
             },
             body: new URLSearchParams(data)
         }).then(res => {
-            if(res.ok) {
+            if(res.ok){
                 status.style.display = 'inline';
                 setTimeout(() => status.style.display = 'none', 1500);
             } else {
@@ -81,4 +91,5 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 </script>
+
 {% endblock %}

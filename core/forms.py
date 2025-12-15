@@ -24,5 +24,11 @@ class SystemSettingsForm(forms.ModelForm):
         fields = ["mode", "eco_temperature"]
         widgets = {
             "mode": forms.RadioSelect,
-            'eco_temperature': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1'}),
+            'eco_temperature': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.1', 'min': '5', 'max': '20'}),
         }
+        
+    def clean_eco_temperature(self):
+        value = self.cleaned_data["eco_temperature"]
+        if not (5 <= value <= 20):
+            raise forms.ValidationError("Eco temperature must be between 5°C and 20°C.")
+        return value

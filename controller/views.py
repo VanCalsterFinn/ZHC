@@ -8,8 +8,15 @@ from django.utils import timezone
 from .models import Zone, Schedule, ManualOverride
 from .forms import ScheduleBatchForm, ScheduleForm, ManualOverrideForm, ZoneForm
 from django.db.models import Q
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.views.generic import FormView
+from django.db import transaction
+from django.http import Http404
 
-
+MAX_TEMP = 30.0
+MIN_TEMP = 5.0   # optional, but recommended
 
 def get_active_overrides():
     now = timezone.now()
@@ -78,27 +85,60 @@ class DashboardView(ListView):
         })
         return context
 
+@method_decorator(csrf_exempt, name='dispatch')
 class OverrideAdjustView(View):
-    def post(self, request):
-        zone_id = request.POST["zone"]
-        delta = int(request.POST["delta"])
+    """
+    Handles AJAX adjustment of zone manual override temperatures (+/-).
+    """
 
-        zone = Zone.objects.get(id=zone_id)
+    def post(self, request, *args, **kwargs):
+        zone_id = request.POST.get("zone")
 
-        # Create or update manual override
-        override, created = ManualOverride.objects.get_or_create(
+        try:
+            delta = float(request.POST.get("delta", 0))
+        except (TypeError, ValueError):
+            return JsonResponse({"success": False, "error": "Invalid delta"})
+
+        try:
+            zone = Zone.objects.get(id=zone_id)
+        except Zone.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Zone not found"})
+
+        now = timezone.now()
+
+        # Get active override if exists
+        override = ManualOverride.objects.filter(
             zone=zone,
-            defaults={"target_temperature": zone.get_active_target, "active_from": timezone.now()}
-        )
+            active_from__lte=now
+        ).filter(
+            Q(active_until__gte=now) | Q(active_until__isnull=True)
+        ).first()
 
-        override.target_temperature += delta
-        override.target_temperature = max(5, min(30, override.target_temperature))
-        override.active_from = timezone.now()
-        override.active_until = None  # reset end time
-        override.save()
+        if override:
+            new_target = override.target_temperature + delta
+        else:
+            new_target = zone.get_active_target + delta
 
-        return redirect("controller:dashboard")
+        # Clamp temperature
+        new_target = max(MIN_TEMP, min(MAX_TEMP, new_target))
 
+        if override:
+            override.target_temperature = new_target
+            override.active_from = now
+            override.save()
+        else:
+            override = ManualOverride.objects.create(
+                zone=zone,
+                target_temperature=new_target,
+                active_from=now
+            )
+
+        return JsonResponse({
+            "success": True,
+            "new_target": round(new_target, 1),
+            "zone": zone.id,
+            "clamped": new_target in (MIN_TEMP, MAX_TEMP)
+        })
 
 
 # Zone views
@@ -344,56 +384,78 @@ class GroupedScheduleListView(TemplateView):
         })
         return context
 
-    
-class GroupedScheduleUpdateView(FormView):
+
+
+class GroupedScheduleBulkEditView(FormView):
     template_name = "controller/partials/_grouped_schedules_form.html"
     form_class = ScheduleBatchForm
 
     def dispatch(self, request, *args, **kwargs):
-        self.schedule_ids = self.kwargs['schedule_ids'].split(',')
+        self.schedule_ids = self.kwargs.get("schedule_ids", "").split(",")
         self.schedules = Schedule.objects.filter(id__in=self.schedule_ids)
 
         if not self.schedules.exists():
-            raise Http404
+            raise Http404("No schedules found.")
 
         return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-
         first = self.schedules.first()
 
-        kwargs['initial'] = {
-            'start_time': first.start_time,
-            'end_time': first.end_time,
-            'target_temperature': first.target_temperature,
-            'priority': first.priority,
+        kwargs["initial"] = {
+            "start_time": first.start_time,
+            "end_time": first.end_time,
+            "target_temperature": first.target_temperature,
+            "priority": first.priority,
         }
 
-        # Pre-select zones (works)
-        kwargs['initial_zones'] = list(
-            self.schedules.values_list('zone_id', flat=True).distinct()
+        # Pre-select zones
+        kwargs["initial_zones"] = list(
+            self.schedules.values_list("zone_id", flat=True).distinct()
         )
 
-        # Pre-select days (must be strings for MultipleChoiceField)
-        kwargs['initial_days'] = [
-            str(d) for d in self.schedules.values_list('day_of_week', flat=True).distinct()
+        # Pre-select days as strings
+        kwargs["initial_days"] = [
+            str(d)
+            for d in self.schedules.values_list("day_of_week", flat=True).distinct()
         ]
 
         return kwargs
 
-
+    @transaction.atomic
     def form_valid(self, form):
         cleaned = form.cleaned_data
+        selected_zones = cleaned["zones"]
+        selected_days = [int(d) for d in cleaned["days_of_week"]]
+        start_time = cleaned["start_time"]
+        end_time = cleaned["end_time"]
+        target_temperature = cleaned["target_temperature"]
+        priority = cleaned["priority"]
 
-        for sched in self.schedules:
-            sched.start_time = cleaned['start_time']
-            sched.end_time = cleaned['end_time']
-            sched.target_temperature = cleaned['target_temperature']
-            sched.priority = cleaned['priority']
-            sched.save()
+        # Update or create schedules for all selected zones/days for the given start/end time
+        for zone in selected_zones:
+            for day in selected_days:
+                sched, created = Schedule.objects.get_or_create(
+                    zone=zone,
+                    day_of_week=day,
+                    start_time=start_time,
+                    end_time=end_time,
+                    defaults={
+                        "target_temperature": target_temperature,
+                        "priority": priority
+                    }
+                )
+                if not created:
+                    # Update existing schedule
+                    sched.target_temperature = target_temperature
+                    sched.priority = priority
+                    sched.save()
 
-        return redirect('controller:grouped_schedule_list')
+        # Do NOT delete any other schedules
+        return redirect("controller:grouped_schedule_list")
+
+
 
 class GroupedScheduleDeleteView(View):
     def post(self, request, schedule_ids, *args, **kwargs):

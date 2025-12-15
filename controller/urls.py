@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
     DashboardView, OverrideAdjustView, ScheduleDeleteView, ZoneDeleteView, ZoneListView, ScheduleListView,
     ScheduleCreateView, ScheduleUpdateView,
-    ZoneCreateView, ZoneUpdateView, ZoneScheduleListView, GroupedScheduleListView, GroupedScheduleUpdateView, GroupedScheduleDeleteView
+    ZoneCreateView, ZoneUpdateView, ZoneScheduleListView, GroupedScheduleListView, GroupedScheduleBulkEditView, GroupedScheduleDeleteView
 )
 
 app_name = "controller"
@@ -20,7 +20,11 @@ urlpatterns = [
     path('zones/<int:zone_id>/schedules/', ZoneScheduleListView.as_view(), name='zone_schedules'),
     
     path('schedules/grouped/', GroupedScheduleListView.as_view(), name='grouped_schedule_list'),
-    path('schedules/group-edit/<str:schedule_ids>/', GroupedScheduleUpdateView.as_view(), name='grouped_schedule_edit'),
+    path(
+        "schedules/bulk-edit/<str:schedule_ids>/",
+        GroupedScheduleBulkEditView.as_view(),
+        name="grouped_schedule_bulk_edit"
+    ),
     path('schedules/group-delete/<str:schedule_ids>/', GroupedScheduleDeleteView.as_view(), name='grouped_schedule_delete'),
 
     path('schedules/', ScheduleListView.as_view(), name='schedule_list'),
