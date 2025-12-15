@@ -5,6 +5,8 @@ from django.views import View
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView, FormView
 from django.urls import reverse_lazy
 from django.utils import timezone
+
+from core.models import SystemSettings
 from .models import Zone, Schedule, ManualOverride
 from .forms import ScheduleBatchForm, ScheduleForm, ManualOverrideForm, ZoneForm
 from django.db.models import Q
@@ -215,14 +217,16 @@ class ZoneScheduleListView(ListView):
 
     def get_queryset(self):
         zone_id = self.kwargs['zone_id']
-        return Schedule.objects.filter(zone_id=zone_id)
+        return Schedule.objects.filter(zone_id=zone_id).order_by('day_of_week', 'start_time')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         zone_id = self.kwargs['zone_id']
         zone = Zone.objects.get(id=zone_id)
+        system_settings = SystemSettings.objects.first()
         context.update({
             "zone": zone,
+            "eco_temperature": system_settings.eco_temperature if system_settings else 20,
             "form": ScheduleForm(),
             "page_title": "Zone Schedules",
             "breadcrumbs": [
@@ -238,6 +242,10 @@ class ScheduleListView(ListView):
     template_name = "controller/schedules.html"
     context_object_name = "schedules"
 
+    def get_queryset(self):
+        # Sort all schedules by day_of_week first, then start_time
+        return Schedule.objects.all().order_by('day_of_week', 'start_time')
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         zones = Zone.objects.all()

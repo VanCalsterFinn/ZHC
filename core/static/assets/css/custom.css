@@ -169,6 +169,27 @@ form select.form-select {
     }
 }
 
+/* Reduce padding/margin on mobile */
+@media (max-width: 768px) {
+    .page-wrapper {
+        padding: 0.25rem !important; /* default is 3rem */
+    }
+    .container-fluid {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+
+    /* Make tables scrollable if they overflow */
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    /* Reduce chart padding inside cards */
+    .card-body {
+        padding: 0.5rem 0.75rem !important;
+    }
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
 .sidebar-logo-text {
     font-family: 'Montserrat', sans-serif;  /* Logo-style font */

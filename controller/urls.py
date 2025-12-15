@@ -1,4 +1,6 @@
 from django.urls import path
+
+from .utils import zone_schedule_api
 from .views import (
     DashboardView, OverrideAdjustView, ScheduleDeleteView, ZoneDeleteView, ZoneListView, ScheduleListView,
     ScheduleCreateView, ScheduleUpdateView,
@@ -18,7 +20,8 @@ urlpatterns = [
     path("zones/edit/<int:pk>/", ZoneUpdateView.as_view(), name="zone-update"),
     path("zones/delete/<int:pk>/", ZoneDeleteView.as_view(), name="zone-delete"),
     path('zones/<int:zone_id>/schedules/', ZoneScheduleListView.as_view(), name='zone_schedules'),
-    
+    path('api/zone/<int:zone_id>/schedule/', zone_schedule_api, name='api_zone_schedule'),
+
     path('schedules/grouped/', GroupedScheduleListView.as_view(), name='grouped_schedule_list'),
     path(
         "schedules/bulk-edit/<str:schedule_ids>/",
