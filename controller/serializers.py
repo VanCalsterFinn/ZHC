@@ -17,6 +17,7 @@ class ZoneSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'name',
+            'pin',
             'current_temperature',
             'target_temperature',
             'manual_override'
