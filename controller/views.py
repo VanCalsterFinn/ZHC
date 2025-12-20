@@ -20,7 +20,7 @@ from django.http import Http404
 MAX_TEMP = 30.0
 MIN_TEMP = 5.0   # optional, but recommended
 
-
+    
 def get_active_overrides():
     now = timezone.now()
     return list(
@@ -37,50 +37,17 @@ class DashboardView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        zones = Zone.objects.all()
         now = timezone.localtime()
 
-        # Active manual overrides
         overrides = get_active_overrides()
-        active_overrides = {o.zone.id: o for o in overrides}
+        active_overrides = {o.zone_id: o for o in overrides}
 
-        # Next event per zone (manual or schedule)
-        next_events = {}
-        for zone in zones:
-            # Next manual override
-            next_manual = ManualOverride.objects.filter(
-                zone=zone, active_from__gt=now).order_by('active_from').first()
-
-            # Next schedule for today or next days
-            today = now.weekday()
-            next_schedule = Schedule.objects.filter(
-                zone=zone
-            ).filter(
-                Q(day_of_week=today, start_time__gt=now.time()) |
-                Q(day_of_week__gt=today)
-            ).order_by('day_of_week', 'start_time').first()
-
-            # Pick whichever comes first
-            next_dt = None
-            if next_manual and next_schedule:
-                manual_dt = next_manual.active_from
-                schedule_dt = timezone.make_aware(timezone.datetime.combine(
-                    timezone.localdate() + timezone.timedelta(days=(next_schedule.day_of_week - today) % 7),
-                    next_schedule.start_time
-                ))
-                next_dt = min(manual_dt, schedule_dt)
-            elif next_manual:
-                next_dt = next_manual.active_from
-            elif next_schedule:
-                next_dt = timezone.make_aware(timezone.datetime.combine(
-                    timezone.localdate() + timezone.timedelta(days=(next_schedule.day_of_week - today) % 7),
-                    next_schedule.start_time
-                ))
-
-            next_events[zone.id] = next_dt
+        next_events = {
+            zone.id: zone.next_temperature_event(now)
+            for zone in context["zones"]
+        }
 
         context.update({
-            "zones": zones,
             "active_overrides": active_overrides,
             "next_events": next_events,
             "page_title": "Heating Dashboard",
@@ -88,6 +55,7 @@ class DashboardView(ListView):
                 {"name": "Home", "url": "/", "active": True},
             ]
         })
+        print(context)
         return context
 
 

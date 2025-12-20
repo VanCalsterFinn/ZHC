@@ -54,7 +54,13 @@
 
             <div class="d-flex align-items-center mb-2 flex-md-nowrap flex-wrap">
                 <div class="zone-target-temp fw-bold me-3" data-zone-id="{{ zone.id }}">
+                    {% with event=next_events|dict_get:zone.id %}
+                    {% if event.target %}
+                    {{ event.target|floatformat:1 }}°C
+                    {% else %}
                     {{ zone.get_active_target|floatformat:1 }}°C
+                    {% endif %}
+                    {% endwith %}
                 </div>
 
                 <div class="d-flex flex-column gap-1 flex-shrink-0 ms-md-auto">
@@ -74,9 +80,17 @@
                     Current: {{ zone.current_temperature|floatformat:1 }}°C
                 </div>
 
+                {% with event=next_events|dict_get:zone.id %}
                 <span class="badge bg-success text-white m-2">
-                    Until: {{ next_events|dict_get:zone.id|time:"H:i" }}
+                    Until:
+                    {% if event %}
+                    {{ event.time|time:"H:i" }}
+                    {% else %}
+                    —
+                    {% endif %}
                 </span>
+                {% endwith %}
+
 
             </div>
 
